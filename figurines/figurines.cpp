@@ -1,3 +1,77 @@
-#include <bits/stdc++.h> 
-#pragma gcc optimize("Ofast") 
-using namespace std; vector < vector < int > > blo; vector < int > cur; vector < vector < int > > ad; vector < vector < int > > rem; int k = 3; int c = 0; void init(int n) { 	k = sqrt(n); 	blo.resize(n/k + 1, vector < int > (n, 0)); 	cur.resize(n, 0); 	ad.resize(n+1); 	rem.resize(n+1); } void log(vector<int>& added, vector<int>& removed) { 	c++; 	for (int f : added) 	{ 		cur[f] = 1; 		ad[c].push_back(f); 	} 	for (int f : removed) 	{ 		cur[f] = 0; 		rem[c].push_back(f); 	} 	if (c % k == 0) 	{ 		blo[c/k] = cur; 		for (int i = blo[c/k].size() - 2; i >= 0; i--) 		{ 			blo[c/k][i] = blo[c/k][i+1] + blo[c/k][i]; 		} 	} } int answer(int d, int x) { 	int blid = (d)/k; 	int ans = blo[blid][x]; 	 	for (int i = blid * k+1; i <= d; i++) 	{ 		for (int f : ad[i]) 		{ 			if (f >= x) ans++; 		} 		for (int f : rem[i]) 		{ 			if (f >= x) ans--; 		} 	} 	return ans; }
+#include<bits/stdc++.h>
+#pragma GCC Optimize("Ofast")
+#define SIZ 3862162
+#define n 131072 
+#define n2 262144
+using namespace std;
+
+int v[SIZ], l[SIZ], r[SIZ], O[SIZ];
+int day[n] = {1};
+int d = 0;
+int cnt = n2;
+
+void add(int i, int c, int o)
+{
+	int x=0, y=n;
+	int m;
+	while(x != i || y != i+1)
+	{
+		O[cnt] = o;
+		v[cnt] = v[o]+c;
+		m = (x+y)>>1;	
+		if (i < m)
+		{
+			y = m;
+			r[cnt] = r[o];
+			o = l[o];
+			l[cnt] = cnt+1;
+		}
+		else
+		{
+			x = m;
+			l[cnt] = l[o];
+			o = r[o];
+			r[cnt] = cnt+1;
+		}
+		cnt++;
+	}
+	v[cnt++] = v[o]+c;
+}
+
+int get(int a, int b, int k, int x=0, int y=n)
+{
+	if (b <= x || y <= a) return 0;
+	if (a <= x && y <= b) return v[k];
+	int m = (x+y)>>1;
+	return get(a, b, l[k], x, m) + get(a, b, r[k], m, y);
+}
+
+
+void init(int _n)
+{
+	for (int i = 1; i < n2; i++) v[i] = 0;
+	for (int i = 1; i < n; i++)
+	{
+		l[i] = i<<1;
+		r[i] = (i<<1)+1;
+	}
+	add(0, 0, 1);
+}
+
+void log(vector < int >& A, vector<int>&R)
+{
+	for (int& a : A)
+	{
+		add(a, 1, cnt-18);
+	}
+	for (int &r : R)
+	{
+		add(r, -1, cnt-18);
+	}
+	day[++d] = cnt-18;
+}
+
+int answer(int d, int y)
+{
+	return get(y, n, day[d]);
+}
