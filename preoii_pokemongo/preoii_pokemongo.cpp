@@ -1,52 +1,22 @@
 #include<math.h>
+#include<iostream>
+#include<vector>
 #pragma GCC target ("avx2")
 #pragma GCC optimization ("Ofast")
 #pragma GCC optimization ("unroll-loops")
 using namespace std;
 typedef long long ll;
 
-inline bool attack(int);
+bool attack(int);
 
 int N, K;
 
-ll eval(int b, int k)
-{
-	ll ans = 1;
-	ll temp = 1;
-	for (ll j = 1; j <= k; j++)
-	{
-	    temp *= (b-j+1);
-	    temp /= j;
-		ans += temp;
-	}
-	return ans;
-}
+vector < vector < int > > gr;
 
-int get(int n, int k)
+int get (int n, int k)
 {
-	int a=0, b = 1;
-	if (k == 2)
-	{
-	    --n;
-	    n<<=1;
-	    b = floor(sqrt(n));
-	    if (b*b + b > n) b--;
-	    return b+1;
-	}
-	else while(eval(b, k) <= n) b<<=2;
-	while(a < b-1)
-	{
-		int m = (a+b)>>1;
-		if (eval(m, k) > n)
-		{
-			b = m;
-		}
-		else
-		{
-			a = m;
-		}
-	}
-	return eval(a, k-1);
+	int m = lower_bound(gr[k].begin(), gr[k].end(), n) - gr[k].begin();
+	return gr[k][m] - gr[k][m-1];
 }
 
 bool b;
@@ -54,6 +24,24 @@ void init(int _N, int _K)
 {
 	N = _N;
 	b = (K = _K) == 1;
+	if (K != 1)
+	{
+    	gr.resize(K+1);
+    	gr[2].push_back(0);
+    
+    	for (int m = 1; gr[2][m-1] < N; m++)
+    	{
+    		gr[2].push_back(gr[2][m-1] + m);
+    	}
+    	for (int k = 3; k <= K; k++)
+    	{
+    		gr[k].push_back(0);				
+    		for (int m = 1; gr[k][m-1] < N; m++)
+    		{
+    			gr[k].push_back(gr[k][m-1] + gr[k-1][m-1] + 1);
+    		}	
+    	}
+	}
 }
 
 int l, r, k, m;
@@ -85,4 +73,3 @@ int new_pokemon()
     	return l;
 	}
 }
-
