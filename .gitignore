@@ -2,6 +2,7 @@
 *.exe
 *.txt
 grader.cpp
+upload.py
 
 src/biglietti
 src/massimo
