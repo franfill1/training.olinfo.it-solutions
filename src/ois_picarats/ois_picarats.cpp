@@ -12,6 +12,9 @@ typedef pair < int , ii > iii;
 
 int main()
 {
+    ios_base::sync_with_stdio(false);
+    cin.tie(NULL);
+    cout.tie(NULL);
 	int N, M, C;
 	fin >> N >> M >> C;
 	

@@ -11,9 +11,10 @@ typedef unsigned long long ull;
 
 int main()
 {
+    ios_base::sync_with_stdio(false);
 	ull N, K;
 	fin >> N >> K;
-	unordered_map < ull , ull > nums;
+	unordered_map < ull , int > nums;
 	ull ans = 0;
 	for (int i = 0; i < N; i++)
 	{
@@ -28,7 +29,6 @@ int main()
 				ans %= M;
 			}
 			nums[el]++;
-			nums[el] %= M;
 		}
 	}
 	fout << ans;

@@ -1,73 +1,69 @@
 #include<bits/stdc++.h>
 using namespace std;
 
-const int alphabet_size = 27;
+const int first = 'a' - 1;
+const int last = 'z' + 1;
+const int alphabet = last - first + 1;
+
+template < typename T >
+ostream& operator <<(ostream &os, vector < T > &v)
+{
+	for (auto &x : v)
+		os << x << " ";
+	return os;
+}
 
 vector < int > suffix_array(string s)
 {
-	int n = s.size();
-	vector < int > ord(n);
-	vector < int > pos(n);
-	int class_count = alphabet_size;
-	vector < int > cnt(class_count, 0);
-	for (int i = 0; i < n; i++)
+	s += (char)first;
+	int N = s.size();
+	vector < int > arr(N), cla(N, 0);
+	iota(arr.begin(), arr.end(), 0);
+	sort(arr.begin(), arr.end(), [&] (int i, int j) {return s[i] < s[j];});
+	int classes = 1;
+	for (int i = 1; i < N; i++)
 	{
-		cnt[s[i] - 'a'+1]++;
+		if (s[arr[i]] != s[arr[i-1]])
+			classes++;
+		cla[arr[i]] = classes - 1;
 	}
-	for (int i = 1; i < class_count; i++)
-	{
-		cnt[i] += cnt[i - 1];
-	}
-	for (int i = n-1; i >= 0; i--)
-	{
-		ord[--cnt[s[i] - 'a'+1]] = i;
-	}
-	pos[ord[0]] = 0;
-	class_count = 1;
-	for (int i = 1; i < n; i++)
-	{
-		if (s[ord[i]] != s[ord[i-1]])
-		{
-			class_count++;
-		}
-		pos[ord[i]] = class_count-1;
-	}
+	//cerr << "arr: " << arr << "\n";
+	//cerr << "cla: " << cla << "\n";
 
-	for (int p = 0; 1<<(p-1) < n; p++)
+	for (int p = 1; (1<<p) < N*2; p++)
 	{
-		vector < int > nord(n);
-		for (int i = 0; i < n; i++)
+		//cerr << "iteration " << p << "\n";
+		vector < int > cnt(classes, 0);
+		for (int c : cla)
+			cnt[c]++;
+		//cerr << "cnt: " << cnt << "\n";
+		for (int c = 1; c < classes; c++)
+			cnt[c] += cnt[c-1];
+		vector < int > narr(N);
+		for (int i = N-1; i >= 0; i--)
 		{
-			nord[i] = ((ord[i] - (1<<p)) % n + n) % n;
+			int idx = (arr[i] - (1<<(p-1)) + N*2) % N;
+			//cerr << i << " " << idx << " " << cla[idx] << "\n";
+			narr[--cnt[cla[idx]]] = idx;
 		}
-		cnt.assign(class_count, 0);
-		for (int i = 0; i < n; i++)
+		arr = narr;
+		//cerr << "arr: " << arr << "\n";
+		vector < int > ncla(N, 0);
+		classes = 1;
+		//cerr << arr[0] << ": " << cla[arr[0]] << " " << cla[(arr[0]   + (1<<(p-1))) % N] << "!\n";
+		for (int i = 1; i < N; i++)
 		{
-			cnt[pos[i]]++;
+			//cerr << arr[i] << ": " << cla[arr[i]] << " " << cla[(arr[i]   + (1<<(p-1))) % N] << "!\n";
+			auto a = make_pair(cla[arr[i]]  , cla[(arr[i]   + (1<<(p-1))) % N]);
+			auto b = make_pair(cla[arr[i-1]], cla[(arr[i-1] + (1<<(p-1))) % N]);
+			if (a != b)
+				classes++;
+			ncla[arr[i]] = classes - 1;
 		}
-		for (int i = 1; i < class_count; i++)
-		{
-			cnt[i] += cnt[i-1];
-		}
-		for (int i = n-1; i >= 0; i--)
-		{
-			ord[--cnt[pos[nord[i]]]] = nord[i];
-		}
-		vector < int > npos(n);
-		npos[ord[0]] = 0;
-		class_count = 1;
-		for (int i = 1; i < n; i++)
-		{
-			if (pos[ord[i-1]] != pos[ord[i]] || pos[(ord[i-1] + (1<<p)) % n] != pos[(ord[i] + (1<<p))% n])
-			{
-				class_count++;
-			}
-			npos[ord[i]] = class_count-1;
-		}
-		pos = npos;
+		cla = ncla;
+		//cerr << "cla: " << cla << "\n";
 	}
-
-	return ord;
+	return arr;
 }
 
 int main()
@@ -76,11 +72,8 @@ int main()
 	freopen("output.txt", "w", stdout);
 	string s;
 	cin >> s;
-	s += 'a'-1;
 	auto v = suffix_array(s);
-	for (int i = 1; i < s.size(); i++)
-	{
+	for (int i = 1; i < v.size(); i++)
 		cout << v[i] << " ";
-	}
 	cout << "\n";
 }

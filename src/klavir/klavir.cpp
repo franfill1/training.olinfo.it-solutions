@@ -57,20 +57,21 @@ inline __attribute__((always_inline)) void fast_write_int(int n)
 
 const long long mod = 1000000007;
 using namespace std;
+#define maxm 1000001
+int S[maxm], Z[maxm];
+bitset < 100 > P[maxm];
+vector < int > us[maxm];
+long long DP[maxm];
+
 int main()
 {
     int n = fast_read_int(), m = fast_read_int();
-    int S[m];
     for (int i = 0; i < m; i++) 
     {
         S[i] = fast_read_int()-1;
     }
 
-    bitset < 100 > P[m+1];
-
-    vector < int > us[m];
     int l=0, r=0;
-    int Z[m];
     Z[0] = m;
     for (int i = 1; i < m; i++)
     {
@@ -89,15 +90,13 @@ int main()
         }
     }
 
-    long long DP[m];
     DP[0] = n;
-
     fast_write_int(n);
     putchar_unlocked('\n');
     for (int i = 1; i < m; i++)
     {
         DP[i] = n * (DP[i-1] + 1) % mod;
-        for (int j : us[i]) 
+        for (int &j : us[i]) 
         {
             DP[i] -= DP[j];
             DP[i] %= mod;

@@ -21,15 +21,10 @@ main(){
 	
 	for (int i = 0; i <= N - K; i++)
 	{
-		string t;
-		for (int j = i; j < i + K; j++)
-		{
-			t += s[j];
-		}
-		m[t]++;
+		m[s.substr(i, K)]++;
 	}
 	
-	string ans = "";
+	string ans = m.begin()->first;
 	for (auto it : m)
 	{
 		if (it.second > m[ans])

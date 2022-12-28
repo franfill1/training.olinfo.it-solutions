@@ -2,51 +2,51 @@
 
 using namespace std;
 
+struct node
+{
+	int val=0, x, y;
+	node *l=NULL, *r=NULL;
+
+	node(int a, int b) : x(a) , y(b)
+	{
+		if (a != b-1)
+		{
+			int m = (a+b)/2;
+			l = new node(a, m);
+			r = new node(m, b);
+		}
+	}
+
+	node(node *n)
+	{
+		val = n->val; x = n->x; y = n->y;
+		l = n->l; r = n->r;
+	}
+
+	node* sum(int a, int v)
+	{
+		node *n = new node(this);
+		if (x == y-1) n->val += v;
+		else
+		{
+			int m = (x+y)/2;
+			if (a < m) n->l = l->sum(a, v);
+			else n->r = r->sum(a, v);
+			n->val = n->l->val + n->r->val;
+		}
+		return n;
+	}
+
+	int get(int a, int b)
+	{
+		if (a <= x && y <= b) return val;
+		if (b <= x || y <= a) return 0;
+		return l->get(a, b) + r->get(a, b);
+	}
+};
+
 struct segtree
 {
-	struct node
-	{
-		int val=0, x, y;
-		node *l=NULL, *r=NULL;
-
-		node(int a, int b) : x(a) , y(b)
-		{
-			if (a != b-1)
-			{
-				int m = (a+b)/2;
-				l = new node(a, m);
-				r = new node(m, b);
-			}
-		}
-
-		node(node *n)
-		{
-			val = n->val; x = n->x; y = n->y;
-			l = n->l; r = n->r;
-		}
-
-		node* sum(int a, int v)
-		{
-			node *n = new node(this);
-			if (x == y-1) n->val += v;
-			else
-			{
-				int m = (x+y)/2;
-				if (a < m) n->l = l->sum(a, v);
-				else n->r = r->sum(a, v);
-				n->val = n->l->val + n->r->val;
-			}
-			return n;
-		}
-
-		int get(int a, int b)
-		{
-			if (a <= x && y <= b) return val;
-			if (b <= x || y <= a) return 0;
-			return l->get(a, b) + r->get(a, b);
-		}
-	};
-
 	int n;
 	vector < node* > roots;
 

@@ -2,10 +2,7 @@
 #pragma GCC target ("avx2")
 #pragma GCC optimization ("Ofast")
 #pragma GCC optimization ("unroll-loops")
-#ifdef _WIN32
-inline int getchar_unlocked() { return _getchar_nolock(); }
-inline int putchar_unlocked(char c) { _putchar_nolock(c); }
-#endif
+
 inline __attribute__((always_inline)) int fast_read_int()
 {
     int c, n = 0;
@@ -37,8 +34,8 @@ int main()
 {
 	freopen("input.txt", "r", stdin);
 	freopen("output.txt", "w", stdout);
-	int N = 2*fast_read_int()-1;
+	int N = 2*fast_read_int();
 	int ans = 0;
-	while(N--) ans ^= fast_read_int();
+	while(--N) ans ^= fast_read_int();
 	fast_write_uint(ans);
 }

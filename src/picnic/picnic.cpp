@@ -4,8 +4,9 @@ using namespace std;
 int main()
 {
     ios_base::sync_with_stdio(false);
-	int N, H[N+2], ans=0;
+	int N, ans=0;
 	cin >> N;
+	int H[N+2];
 	H[0] = H[N+1] = 1<<30;
 	for (int i = 1; i <= N; i++)
 		cin >> H[i];

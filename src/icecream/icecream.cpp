@@ -44,6 +44,7 @@ int main()
 			x = g[x][c];
 		}
 		A[i] += cnt[x]-1;
+		cnt[x] = 1;
 	}
 	for (auto a : A) cout << a << "\n";
 }
