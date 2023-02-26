@@ -12,8 +12,6 @@ struct node {
 		key = k;
 		size = val = v;
 		prior = rand();
-		left = nullptr;
-		right = nullptr;
 	}
 	
 	~node()
@@ -27,16 +25,6 @@ struct node {
 		size = (left ? left->size : 0) + (right ? right->size : 0) + val;
 	}
 };
-
-ostream& operator <<(ostream& os, node* x)
-{
-	if (!x)
-		return os;
-	os << x->left;
-	os << "{" << x->key << "," << x->val << "},";
-	os << x->right;
-	return os;
-}
 
 pair < node* , node* > split(node* x, int piv)
 {
@@ -78,37 +66,25 @@ node* merge(node* l, node* r)
 	}
 }
 
-node* find(node* x, int key)
+bool add(node* x, int key, int val)
 {
 	if (!x)
-		return nullptr;
+		return false;
+	bool ok;
 	if (x->key == key)
-		return x;
+		ok = true, x->val += val;
 	if (x->key > key)
-		return find(x->left, key);
+		ok = add(x->left, key, val);
 	if (x->key < key)
-		return find(x->right, key);
-	return nullptr;
-}
-
-void recalc(node* x, int key)
-{
-	if (key < x->key)
-		recalc(x->left, key);
-	if (key > x->key)
-		recalc(x->right, key);
-	x->recalc();
+		ok = add(x->right, key, val);
+	if (ok)
+		x->recalc();
+	return ok;
 }
 
 node* insert(node* treap, int key, int val)
 {
-	node *x = find(treap, key);
-	if (x)
-	{
-		x->val += val;	
-		recalc(treap, key);
-	}
-	else 
+	if (!add(treap, key, val))
 	{
 		auto [l, r] = split(treap, key);	
 		auto n = new node(key, val);
@@ -140,15 +116,6 @@ void collect (node* x, vector < pair < int , int > > &v)
 	collect(x->right, v);
 }
 
-void recalcall(node *x)
-{
-	if (!x)
-		return;
-	recalcall(x->left);
-	recalcall(x->right);
-	x->recalc();
-}
-
 const int MAXN = 50000;
 vector < pair < int , int > > g[MAXN];
 node* s[MAXN];
@@ -174,12 +141,7 @@ int dfs(int x=0, int p=-1, int d=0)
 			collect(s[y], col);
 			delete s[y];
 			for (auto [k, v] : col)
-			{
-				int se = 1 - k + 2*d;
-				int ord = order_of_key(s[x], se);
-				int ad = ord * v;
-				ans += ad;
-			}
+				ans += order_of_key(s[x], 1 - k + 2*d) * v;
 			for (auto [k, v] : col)
 				s[x] = insert(s[x], k, v);
 		}
@@ -201,7 +163,6 @@ int main()
 		ws.emplace_back(w);
 	}
 	sort(ws.begin(), ws.end());
-	tr = 3;
 	int l = -1, r = ws.size() - 1;
 	while(l < r - 1)
 	{
