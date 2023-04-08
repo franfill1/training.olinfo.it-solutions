@@ -28,7 +28,7 @@ def main(user, pwd):
             if submission['score'] == 100 and len(submission['files']) == 1:
                 for file in submission['files']:
                     r = requests.get(f'https://training.olinfo.it/api/files/{file["digest"]}/{file["name"]}')
-                    filename = f'src/{task_name}/{task_name}.cpp'
+                    filename = f'src/{task_name}.cpp'
                     os.makedirs(os.path.split(filename)[0], exist_ok=True)
                     with open(filename, 'w') as f:
                         f.write(r.text)
